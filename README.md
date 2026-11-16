@@ -26,29 +26,14 @@ A multiclass classification and unsupervised clustering study built for **CSE422
 
 ---
 
-## Exploratory Data Analysis
+## Exploratory Data Analysis & Preprocessing
 
-The three target classes are nearly balanced (**uniform-random baseline = 33.33%**), and Pearson/Spearman/Kendall correlations between every input feature and `Quality_Label` are near zero.
-
-| Class Distribution | Feature Correlations | Target Associations |
-| :---: | :---: | :---: |
-| ![Class Distribution](./plots/class_distribution.png) | ![Correlation Heatmap](./plots/correlation_heatmap.png) | ![Target Association Heatmap](./plots/target_association_heatmap.png) |
-
-<details>
-<summary>View numeric feature distributions plot</summary>
-
-![Numeric Feature Distributions](./plots/numeric_distributions.png)
-
-</details>
-
----
-
-## Preprocessing Pipeline
-
-1. **Median Imputation:** Filled 5% missing values in `Lines_of_Code` (median `4860.0`), `Code_Churn` (`104.0075`), and `Comment_Density` (`0.5421`) using `SimpleImputer(strategy='median')` rather than dropping ~15% of rows.
-2. **Label Encoding:** Encoded `Has_Unit_Tests` (`No` → `0`, `Yes` → `1`) and `Quality_Label` (`High` → `0`, `Low` → `1`, `Medium` → `2`) via `LabelEncoder`.
-3. **Train / Test Split:** 80/20 split (`1,280` training rows, `320` test rows, `random_state=42`).
-4. **Leak-Free Scaling:** `StandardScaler` was fitted strictly on `X_train` and applied to `X_test` for distance- and gradient-based models (**KNN**, **Neural Network**, **K-means**), while the **Decision Tree** was trained on unscaled features.
+- **Class Balance:** `High` = 566 (35.38%), `Low` = 533 (33.31%), `Medium` = 501 (31.31%) — uniform-random baseline is **33.33%**.
+- **Correlation Analysis:** Pearson, Spearman, and Kendall correlations between every input feature and `Quality_Label` are near zero.
+- **Median Imputation:** Filled 5% missing values in `Lines_of_Code` (median `4860.0`), `Code_Churn` (`104.0075`), and `Comment_Density` (`0.5421`) using `SimpleImputer(strategy='median')` rather than dropping ~15% of rows.
+- **Label Encoding:** Encoded `Has_Unit_Tests` (`No` → `0`, `Yes` → `1`) and `Quality_Label` (`High` → `0`, `Low` → `1`, `Medium` → `2`) via `LabelEncoder`.
+- **Train / Test Split:** 80/20 split (`1,280` training rows, `320` test rows, `random_state=42`).
+- **Leak-Free Scaling:** `StandardScaler` was fitted strictly on `X_train` and applied to `X_test` for distance- and gradient-based models (**KNN**, **Neural Network**, **K-means**), while the **Decision Tree** was trained on unscaled features.
 
 ---
 
@@ -64,20 +49,10 @@ The three target classes are nearly balanced (**uniform-random baseline = 33.33%
 
 *(An unconstrained Decision Tree reaches depth 25 with 477 leaves and 100.00% training accuracy, but drops to 32.19% on the test set—confirming memorization rather than generalizable signal.)*
 
-| Accuracy Comparison | ROC Comparison | Neural Network Loss Curve |
-| :---: | :---: | :---: |
-| ![Accuracy Comparison](./plots/accuracy_comparison.png) | ![ROC Comparison](./plots/roc_comparison.png) | ![Neural Network Loss](./plots/neural_network_loss.png) |
-
-![Confusion Matrices](./plots/confusion_matrices.png)
-
 ### Unsupervised Clustering (`K-means`)
 
-- Applied `KMeans(n_clusters=3, random_state=42, n_init=10)` on all 1,600 scaled feature rows (ignoring labels) after inspecting SSE across `K = 1..10` via the Elbow method.
+- Applied `KMeans(n_clusters=3, random_state=42, n_init=10)` on all 1,600 scaled feature rows (ignoring labels) after inspecting SSE across `K = 1..10` via the Elbow method, and visualized clusters across `Cyclomatic_Complexity` vs `Num_Bugs`.
 - **Cluster Sizes (`K=3`):** Cluster 0 = `429`, Cluster 1 = `392`, Cluster 2 = `779` (`Inertia / SSE = 10,536.73`).
-
-| Elbow Method (`K` Selection) | PCA Projection of K-means Clusters |
-| :---: | :---: |
-| ![K-means Elbow Method](./plots/kmeans_diagnostics.png) | ![K-means PCA Clusters](./plots/kmeans_pca_clusters.png) |
 
 ---
 
@@ -97,16 +72,6 @@ CSE422 Project/
 ├── Lab Project Report.pdf
 ├── CSE422 Project Guidelines.pdf
 ├── plots/
-│   ├── accuracy_comparison.png
-│   ├── class_distribution.png
-│   ├── confusion_matrices.png
-│   ├── correlation_heatmap.png
-│   ├── kmeans_diagnostics.png
-│   ├── kmeans_pca_clusters.png
-│   ├── neural_network_loss.png
-│   ├── numeric_distributions.png
-│   ├── roc_comparison.png
-│   └── target_association_heatmap.png
 └── README.md
 ```
 
