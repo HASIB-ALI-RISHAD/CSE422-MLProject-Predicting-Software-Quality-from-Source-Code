@@ -26,14 +26,22 @@ A multiclass classification and unsupervised clustering study built for **CSE422
 
 ---
 
-## Exploratory Data Analysis & Preprocessing
+## Exploratory Data Analysis
 
-- **Class Balance:** `High` = 566 (35.38%), `Low` = 533 (33.31%), `Medium` = 501 (31.31%) — uniform-random baseline is **33.33%**.
-- **Correlation Analysis:** Pearson, Spearman, and Kendall correlations between every input feature and `Quality_Label` are near zero.
-- **Median Imputation:** Filled 5% missing values in `Lines_of_Code` (median `4860.0`), `Code_Churn` (`104.0075`), and `Comment_Density` (`0.5421`) using `SimpleImputer(strategy='median')` rather than dropping ~15% of rows.
-- **Label Encoding:** Encoded `Has_Unit_Tests` (`No` → `0`, `Yes` → `1`) and `Quality_Label` (`High` → `0`, `Low` → `1`, `Medium` → `2`) via `LabelEncoder`.
-- **Train / Test Split:** 80/20 split (`1,280` training rows, `320` test rows, `random_state=42`).
-- **Leak-Free Scaling:** `StandardScaler` was fitted strictly on `X_train` and applied to `X_test` for distance- and gradient-based models (**KNN**, **Neural Network**, **K-means**), while the **Decision Tree** was trained on unscaled features.
+The three target classes are nearly balanced (**uniform-random baseline = 33.33%**), and Pearson, Spearman, and Kendall correlations between every input feature and `Quality_Label` are near zero.
+
+| Class Distribution | Full Correlation Heatmap | Target Correlation (Pearson / Spearman / Kendall) |
+| :---: | :---: | :---: |
+| ![Class Distribution](./figures/class_distribution.png) | ![Correlation Heatmap](./figures/correlation_heatmap.png) | ![Target Correlations](./figures/target_correlations.png) |
+
+---
+
+## Preprocessing Pipeline
+
+1. **Median Imputation:** Filled 5% missing values in `Lines_of_Code` (median `4860.0`), `Code_Churn` (`104.0075`), and `Comment_Density` (`0.5421`) using `SimpleImputer(strategy='median')` rather than dropping ~15% of rows.
+2. **Label Encoding:** Encoded `Has_Unit_Tests` (`No` → `0`, `Yes` → `1`) and `Quality_Label` (`High` → `0`, `Low` → `1`, `Medium` → `2`) via `LabelEncoder`.
+3. **Train / Test Split:** 80/20 split (`1,280` training rows, `320` test rows, `random_state=42`).
+4. **Leak-Free Scaling:** `StandardScaler` was fitted strictly on `X_train` and applied to `X_test` for distance- and gradient-based models (**KNN**, **Neural Network**, **K-means**), while the **Decision Tree** was trained on unscaled features.
 
 ---
 
@@ -49,10 +57,22 @@ A multiclass classification and unsupervised clustering study built for **CSE422
 
 *(An unconstrained Decision Tree reaches depth 25 with 477 leaves and 100.00% training accuracy, but drops to 32.19% on the test set—confirming memorization rather than generalizable signal.)*
 
+| Accuracy Comparison | Macro-Average ROC Curve |
+| :---: | :---: |
+| ![Accuracy Comparison](./figures/accuracy_comparison.png) | ![Macro ROC Comparison](./figures/roc_comparison.png) |
+
+![Confusion Matrices](./figures/confusion_matrices.png)
+
+![Neural Network Loss and Accuracy Curves](./figures/neural_network_loss.png)
+
 ### Unsupervised Clustering (`K-means`)
 
 - Applied `KMeans(n_clusters=3, random_state=42, n_init=10)` on all 1,600 scaled feature rows (ignoring labels) after inspecting SSE across `K = 1..10` via the Elbow method, and visualized clusters across `Cyclomatic_Complexity` vs `Num_Bugs`.
 - **Cluster Sizes (`K=3`):** Cluster 0 = `429`, Cluster 1 = `392`, Cluster 2 = `779` (`Inertia / SSE = 10,536.73`).
+
+| Elbow Method (`K = 1..10`) | K-means Clusters (`Cyclomatic_Complexity` vs `Num_Bugs`) |
+| :---: | :---: |
+| ![K-means Elbow Method](./figures/kmeans_elbow.png) | ![K-means Clusters](./figures/kmeans_clusters.png) |
 
 ---
 
@@ -71,7 +91,16 @@ CSE422 Project/
 ├── software_quality_dataset.csv
 ├── Lab Project Report.pdf
 ├── CSE422 Project Guidelines.pdf
-├── plots/
+├── figures/                            # Plots exported from the final notebook
+│   ├── accuracy_comparison.png
+│   ├── class_distribution.png
+│   ├── confusion_matrices.png
+│   ├── correlation_heatmap.png
+│   ├── kmeans_clusters.png
+│   ├── kmeans_elbow.png
+│   ├── neural_network_loss.png
+│   ├── roc_comparison.png
+│   └── target_correlations.png
 └── README.md
 ```
 
